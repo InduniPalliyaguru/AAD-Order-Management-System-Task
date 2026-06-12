@@ -7,7 +7,9 @@ import com.ijse.taskAAD.service.CustomerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -31,7 +33,7 @@ public class CustomerServiceImpl implements CustomerService {
             customerRepository.save(customer);
 
         } catch (Exception e) {
-            log.error("Error occurred while saving customer: " + e.getMessage());
+            log.error("Error occurred while saving customer: {}", e.getMessage());
             throw e;
         }
     }
@@ -40,9 +42,22 @@ public class CustomerServiceImpl implements CustomerService {
     public List<CustomerDTO> getAllCustomers() {
         log.info("Execute method getAllCustomers");
         try {
-            return List.of();
+
+            List<CustomerDTO> customerList = new ArrayList<>();
+            List<Customer> customers = customerRepository.findAll();
+
+            for (Customer customer : customers) {
+                CustomerDTO customerDTO = new CustomerDTO();
+                customerDTO.setCustomerId(customer.getCustomerId());
+                customerDTO.setName(customer.getName());
+                customerDTO.setAddress(customer.getAddress());
+
+                customerList.add(customerDTO);
+            }
+            return customerList;
+
         } catch (Exception e) {
-            log.error("Error occurred while retrieving customers: " + e.getMessage());
+            log.error("Error occurred while retrieving customers: {}", e.getMessage());
             throw e;
         }
     }
@@ -51,9 +66,21 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerDTO getCustomerDetail(long id) {
         log.info("Execute method getCustomerDetail");
         try {
-            return null;
+
+            Optional<Customer> customerOptional = customerRepository.findById(id);
+
+            if (!customerOptional.isPresent()) {
+                log.error("Customer with id {} does not exist", id);
+            }
+            Customer  customer = customerOptional.get();
+            CustomerDTO customerDTO = new CustomerDTO();
+            customerDTO.setCustomerId(customer.getCustomerId());
+            customerDTO.setName(customer.getName());
+            customerDTO.setAddress(customer.getAddress());
+            return customerDTO;
+
         } catch (Exception e) {
-            log.error("Error occurred while retrieving customer detail: " + e.getMessage());
+            log.error("Error occurred while retrieving customer detail: {}", e.getMessage());
             throw e;
         }
     }
@@ -63,8 +90,17 @@ public class CustomerServiceImpl implements CustomerService {
         log.info("Execute method updateCustomer");
         try {
 
+            Optional<Customer> customerOptional = customerRepository.findById(customerDTO.getCustomerId());
+            if (!customerOptional.isPresent()) {
+                log.error("Customer with id {} does not exist", customerDTO.getCustomerId());
+            }
+            Customer customer = customerOptional.get();
+            customer.setName(customerDTO.getName());
+            customer.setAddress(customerDTO.getAddress());
+            customerRepository.save(customer);
+
         } catch (Exception e) {
-            log.error("Error occurred while updating customer: " + e.getMessage());
+            log.error("Error occurred while updating customer: {}", e.getMessage());
             throw e;
         }
     }
