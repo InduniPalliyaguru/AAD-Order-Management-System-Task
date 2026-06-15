@@ -17,13 +17,12 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long orderId;
-    private String description;
-    private double totalAmount;
+    private double total;
 
     @ManyToOne
     private Customer customer;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<OrderItem> orderItem;
+    private List<OrderItem> orderItemList;
 
 }

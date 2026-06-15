@@ -20,6 +20,6 @@ public class Item {
     private double price;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<OrderItem> orderItems;
+    private List<OrderItem> orderItemList;
 
 }

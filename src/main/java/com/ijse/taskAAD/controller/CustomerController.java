@@ -2,6 +2,7 @@ package com.ijse.taskAAD.controller;
 
 import com.ijse.taskAAD.constant.CommonResponse;
 import com.ijse.taskAAD.dto.CustomerDTO;
+import com.ijse.taskAAD.dto.FilterOrderDTO;
 import com.ijse.taskAAD.service.CustomerService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -43,5 +44,11 @@ public class CustomerController {
     public CommonResponse updateCustomer(@RequestBody CustomerDTO customerDTO) {
         customerService.updateCustomer(customerDTO);
         return new CommonResponse(OPERATION_SUCCESS, SUCCESS_MESSAGE);
+    }
+
+    @GetMapping(value = "/{customerId}/orders", produces = MediaType.APPLICATION_JSON_VALUE)
+    public CommonResponse getFilterOrders(@PathVariable long customerId) {
+        List<FilterOrderDTO> filterOrders = customerService.getFilterOrders(customerId);
+        return new CommonResponse(OPERATION_SUCCESS, filterOrders, SUCCESS_MESSAGE);
     }
 }

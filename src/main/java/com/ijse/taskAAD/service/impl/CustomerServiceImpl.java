@@ -1,8 +1,14 @@
 package com.ijse.taskAAD.service.impl;
 
 import com.ijse.taskAAD.dto.CustomerDTO;
+import com.ijse.taskAAD.dto.FilterOrderDTO;
+import com.ijse.taskAAD.dto.ItemDTO;
 import com.ijse.taskAAD.entity.Customer;
+import com.ijse.taskAAD.entity.Item;
+import com.ijse.taskAAD.entity.Order;
+import com.ijse.taskAAD.entity.OrderItem;
 import com.ijse.taskAAD.repository.CustomerRepository;
+import com.ijse.taskAAD.repository.OrderRepository;
 import com.ijse.taskAAD.service.CustomerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,9 +22,11 @@ import java.util.Optional;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final OrderRepository orderRepository;
 
-    public CustomerServiceImpl(CustomerRepository customerRepository) {
+    public CustomerServiceImpl(CustomerRepository customerRepository, OrderRepository orderRepository) {
         this.customerRepository = customerRepository;
+        this.orderRepository = orderRepository;
     }
 
     @Override
@@ -101,6 +109,50 @@ public class CustomerServiceImpl implements CustomerService {
 
         } catch (Exception e) {
             log.error("Error occurred while updating customer: {}", e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
+    public List<FilterOrderDTO> getFilterOrders(long customerId) {
+        log.info("Execute method getFilterOrders");
+        try {
+
+            Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
+            if(!optionalCustomer.isPresent()) {
+                log.error("Customer with id {} does not exist", customerId);
+            }
+
+            Customer customer = optionalCustomer.get();
+
+            List<Order> orderList = customer.getOrderList();
+
+            List<FilterOrderDTO> responseList = new ArrayList<>();
+
+            for (Order order : orderList) {
+                FilterOrderDTO dto = new FilterOrderDTO();
+                dto.setOrderId(order.getOrderId());
+
+                List<ItemDTO> itemDTOList = new ArrayList<>();
+
+                List<OrderItem> orderItemList = order.getOrderItemList();
+                for (OrderItem orderItem : orderItemList) {
+                    Item item = orderItem.getItem();
+
+                    ItemDTO itemDTO = new ItemDTO();
+                    itemDTO.setItemId(item.getItemId());
+                    itemDTO.setName(item.getName());
+                    itemDTO.setPrice(item.getPrice());
+
+                    itemDTOList.add(itemDTO);
+                }
+                dto.setItemList(itemDTOList);
+                responseList.add(dto);
+            }
+            return responseList;
+
+        } catch (Exception e) {
+            log.error("Error occurred while retrieving filter orders: {}", e.getMessage());
             throw e;
         }
     }
