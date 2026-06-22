@@ -50,7 +50,7 @@ public class OrderServiceImpl implements OrderService {
 
             // check the customer before saving
             Optional<Customer> optionalCustomer = customerRepository.findById(placeOrderDTO.getCustomerId());
-            if(!optionalCustomer.isPresent()){
+            if (!optionalCustomer.isPresent()) {
                 throw new RuntimeException("Customer not found");
             }
 
@@ -66,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
                 OrderItem orderItem = new OrderItem();
 
                 Optional<Item> optionalItem = itemRepository.findById(itemId);
-                if(!optionalItem.isPresent()){
+                if (!optionalItem.isPresent()) {
                     throw new RuntimeException("OrderItem not found");
                 }
                 Item item = optionalItem.get();
@@ -99,7 +99,7 @@ public class OrderServiceImpl implements OrderService {
                 dto.setOrderId(order.getOrderId());
                 dto.setCustomerName(order.getCustomer().getName());
 
-                List<ItemDTO> itemDtoList  = new ArrayList<>();
+                List<ItemDTO> itemDtoList = new ArrayList<>();
 
                 List<OrderItem> orderItemList = order.getOrderItemList();
 

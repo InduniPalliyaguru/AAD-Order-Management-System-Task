@@ -20,6 +20,8 @@ public class Order {
     private double total;
 
     @ManyToOne
+    private User user;
+    @ManyToOne
     private Customer customer;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

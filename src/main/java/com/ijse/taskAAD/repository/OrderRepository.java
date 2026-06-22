@@ -14,4 +14,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "JOIN customer c ON o.customer_id = c.customer_id" +
             "WHERE (?1 IS NULL OR c.name LIKE %?1%)", nativeQuery = true)
     List<Order> findByCustomerName(String name);
+
+    @Query (value = "SELECT o FROM Order o " +
+            "JOIN User u ON o.user = u " +
+            "WHERE (?1 IS NULL OR u.userName LIKE %?1%) AND " +
+            "(u.role = 'CUSTOMER')")
+    List<Order> filterOrderJPQL(String customerName);
+
 }
